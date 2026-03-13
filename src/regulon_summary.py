@@ -23,6 +23,6 @@ print("Gen | No. de genes que regula | Genes regulados")
 
 for tf in regulon:
     numero = len(regulon[tf])
-    genes = ", ".join(regulon[tf]) # Puse el join para deshacerme de la estructura de lista en el print
+    genes = ", ".join(regulon[tf]) 
     
     print(tf, "|", numero, "|", genes)
