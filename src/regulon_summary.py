@@ -8,13 +8,19 @@ interacciones = [
     ("CRP", "lacZ", "+"),
     ("CRP", "lacY", "+"), 
 ]
-    
-for linea in sorted(interacciones):
-        tf, target, reg = linea
+
+if not interacciones:
+    print("No hay interacciones registradas.")
+    exit(1)
+else: 
+    for linea in sorted(interacciones):
+        tf, target, efecto = linea
         
+        # Creo un diccionario para cada tf
         if tf not in regulon:
             regulon[tf] = []
         
+        # Agrego el target al diccionario de su tf
         if target not in regulon[tf]:
             regulon[tf].append(target)
 
