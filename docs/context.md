@@ -23,3 +23,9 @@ total de genes regulados
 lista de genes regulados (ordenada)
 Efecto regulador del gen
 ```
+
+## Actualización v1.1
+
+1. Leer los datos desde un archivo
+    1.1 El archivo trae 7 columnas y las que vamos a usar son: 2, 5 y 6
+2. Los resultados deberán mandarse a un archivo de salida 
