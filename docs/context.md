@@ -20,4 +20,6 @@ Generar una tabla que indique para cada TF:
 
 Nombre del TF (esta solumna debe estar ordenada)
 total de genes regulados
-lista de genes regulados (ordenada) ```
+lista de genes regulados (ordenada)
+Efecto regulador del gen
+```

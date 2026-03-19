@@ -17,13 +17,13 @@ interacciones = [
 
 **Salida esperada:**
 ```
-Gen | No. de genes que regula | Genes regulados
-AraC | 2 | araA, araB
-CRP | 2 | lacY, lacZ
-LexA | 1 | recA
+Gen | No. de genes que regula | Genes regulados | Efecto
+AraC | 2 | araA, araB | Dual
+CRP | 2 | lacY, lacZ | Activador
+LexA | 1 | recA | Represor
 ```
 
-**Resultado:** ✅ Correcto
+**Resultado:** Correcto
 
 ---
 
@@ -47,7 +47,7 @@ if not interacciones:
 No hay interacciones registradas.
 ```
 
-**Resultado:** ✅ Correcto
+**Resultado:** Correcto
 
 ---
 
@@ -66,11 +66,11 @@ interacciones = [
 
 **Salida esperada:**
 ```
-Gen | No. de genes que regula | Genes regulados
-AraC | 3 | araA, araB, araC
+Gen | No. de genes que regula | Genes regulados | Efecto
+AraC | 3 | araA, araB, araC | Dual
 ```
 
-**Resultado:** ✅ Correcto
+**Resultado:** Correcto
 
 ---
 
@@ -88,11 +88,11 @@ interacciones = [
 
 **Salida esperada:**
 ```
-Gen | No. de genes que regula | Genes regulados
-AraC | 1 | araA
+Gen | No. de genes que regula | Genes regulados | Efecto
+AraC | 1 | araA | Dual
 ```
 
-**Resultado:** ✅ Correcto (no se duplica `araA`)
+**Resultado:** Correcto (no se duplica `araA`)
 
 ---
 
@@ -109,8 +109,8 @@ interacciones = [
 
 **Salida esperada:**
 ```
-Gen | No. de genes que regula | Genes regulados
-LexA | 1 | recA
+Gen | No. de genes que regula | Genes regulados | Efecto
+LexA | 1 | recA | Represor
 ```
 
-**Resultado:** ✅ Correcto
+**Resultado:** Correcto

@@ -6,7 +6,7 @@ interacciones = [
     ("AraC", "araB", "-"),
     ("LexA", "recA", "-"),
     ("CRP", "lacZ", "+"),
-    ("CRP", "lacY", "+"), 
+    ("CRP", "lacY", "-"), 
 ]
 
 if not interacciones:
@@ -26,13 +26,16 @@ else:
         
         if efecto == "":
             continue
+        
         if tf not in clas:
             clas[tf] = []
+            if efecto not in clas[tf]:
+                clas[tf].append(efecto)
             if efecto == "+":
                 clas[tf] = ["Activador"]
             elif efecto == "-":
                 clas[tf] = ["Represor"]
-            else:
+            elif clas[tf].items == "+" or clas[tf].items == "-":
                 clas[tf] = ["Dual"]
             
 
