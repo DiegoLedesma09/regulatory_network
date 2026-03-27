@@ -1,10 +1,5 @@
 import os
 
-regulon = {}
-clas = {}
-interacciones = []
-lineas_descartadas = 0
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ruta_entrada = os.path.join(BASE_DIR, "..", "data", "raw", "NetworkRegulatorGene.tsv")
 ruta_salida = os.path.join(BASE_DIR, "..", "results", "regulon_summary.tsv")
@@ -13,82 +8,199 @@ os.makedirs(os.path.join(BASE_DIR, "..", "results"), exist_ok=True)
 if not os.path.exists(ruta_entrada):
     print("Error: archivo no encontrado")
     exit(1)
+    
+    
 
-# Columnas requeridas
-COLUMNAS_REQUERIDAS = {"3)RegulatorGeneName", "5)regulatedName", "6)function"}
+# ===================================================================================================
+# Responsabilidad: Leer un archivo, obtener sus interacciones y generar una tupla con las interacciones
+# Entrada: Una ruta relativa para poder manejar el archivo desde la posición del programa
+# Salida: Una tupla con las interacciones del archivo "NetworkRegulatorGene.tsv"
+# ===================================================================================================
 
-with open(ruta_entrada, "r") as infile:
-    encabezado = None
-    indice = {}
+def lecture_validation(ruta_entrada):
+    """
+    ===============================================================================================
+    Lee un archivo, identifica las columnas requiridas para obtener las interacciones de TFs con sus respectivos
+    targets, así como el efecto que tiene sobre el target.
+     
+    Args:
+        ruta_entrada (str): Ruta del archivo con las interacciones de la red
+    
+    Returns:
+        interacciones (tup(str, str, str): Interacciones completas usando solamente TF, target y efecto.
+        
+    ==============================================================================================
+    """
+    interacciones = []
+    lineas_descartadas = 0 
+    COLUMNAS_REQUERIDAS = {"3)RegulatorGeneName", "5)regulatedName", "6)function"}
 
-    for linea in infile:
-        linea = linea.strip()
+    with open(ruta_entrada, "r") as infile:
+        encabezado = None
+        indice = {}
 
-        if not linea or linea.startswith("#"):
-            continue
+        for linea in infile:
+            linea = linea.strip()
 
-        columnas = linea.split("\t")
+            if not linea or linea.startswith("#"):
+                continue
 
-        # La primera línea no-comentario es el encabezado
-        if encabezado is None:
-            encabezado = [col.strip() for col in columnas]
+            columnas = linea.split("\t")
 
-            # Validar columnas requeridas
-            if not COLUMNAS_REQUERIDAS.issubset(set(encabezado)):
-                faltantes = COLUMNAS_REQUERIDAS - set(encabezado)
-                print(f"Error: columnas faltantes en el archivo: {faltantes}")
-                exit(1)
+            # La primera línea no-comentario es el encabezado
+            if encabezado is None:
+                encabezado = [col.strip() for col in columnas]
 
-            # Mapear nombre → índice (robusto ante reordenamientos)
-            indice["tf"]     = encabezado.index("3)RegulatorGeneName")
-            indice["target"] = encabezado.index("5)regulatedName")
-            indice["efecto"] = encabezado.index("6)function")
-            continue
+                # Validar columnas requeridas
+                if not COLUMNAS_REQUERIDAS.issubset(set(encabezado)):
+                    faltantes = COLUMNAS_REQUERIDAS - set(encabezado)
+                    print(f"Error: columnas faltantes en el archivo: {faltantes}")
+                    exit(1)
 
-        # Validar número mínimo de columnas
-        if len(columnas) <= max(indice.values()):
-            lineas_descartadas += 1
-            continue
+                # Mapear nombre → índice (robusto ante reordenamientos)
+                indice["tf"]     = encabezado.index("3)RegulatorGeneName")
+                indice["target"] = encabezado.index("5)regulatedName")
+                indice["efecto"] = encabezado.index("6)function")
+                continue
 
-        tf     = columnas[indice["tf"]].strip()
-        target = columnas[indice["target"]].strip()
-        efecto = columnas[indice["efecto"]].strip()
+            # Validar número mínimo de columnas
+            if len(columnas) <= max(indice.values()):
+                lineas_descartadas += 1
+                continue
 
-        if not tf or not target or not efecto:
-            lineas_descartadas += 1
-            continue
+            tf     = columnas[indice["tf"]].strip()
+            target = columnas[indice["target"]].strip()
+            efecto = columnas[indice["efecto"]].strip()
 
-        if efecto not in {"+", "-", "+-"}:
-            lineas_descartadas += 1
-            continue
+            if not tf or not target or not efecto:
+                lineas_descartadas += 1
+                continue
 
-        interacciones.append((tf, target, efecto))
+            if efecto not in {"+", "-", "+-"}:
+                lineas_descartadas += 1
+                continue
 
-if lineas_descartadas:
-    print(f"Advertencia: {lineas_descartadas} línea(s) descartadas por datos inválidos.")
+            interacciones.append((tf, target, efecto))
 
-if not interacciones:
-    print("No hay interacciones registradas.")
-    exit(1)
+    if lineas_descartadas:
+        print(f"Advertencia: {lineas_descartadas} línea(s) descartadas por datos inválidos.")
 
-for tf, target, efecto in sorted(interacciones):
-    if tf not in regulon:
-        regulon[tf] = []
-    if target not in regulon[tf]:
-        regulon[tf].append(target)
+    if not interacciones:
+        print("No hay interacciones registradas.")
+        exit(1)
+    
+    return(interacciones)
 
-    if tf not in clas:
-        clas[tf] = "Activador" if efecto == "+" else "Represor" if efecto == "-" else "Dual"
-    else:
-        if clas[tf] != "Dual" and clas[tf] != efecto:
-            clas[tf] = "Dual"
+# ===================================================================================================
+# Responsabilidad: Construir una estructura de datos que me permita organizar las interacciones del regulon
+# Entrada: Una tupla que contenga las interacciones de los TF en el regulon
+# Salida: Un diccionario que organice targets según su TF
+# ====================================================================================================
+def construir_regulon(interacciones):
+    """
+    ==============================================================================================
+    Construye un diccionario que organiza los targets por su TF regulador.
 
-with open(ruta_salida, "w") as outfile:
-    outfile.write("Gen\tNo. de genes que regula\tGenes regulados\tEfecto\n")
-    for tf in regulon:
-        numero = len(regulon[tf])
-        genes  = ", ".join(regulon[tf])
-        efecto = clas.get(tf, "Desconocido")
-        outfile.write(f"{tf}\t{numero}\t{genes}\t{efecto}\n")
+    Args:
+        interacciones (tpl(str, str, str)): Una tupla con las interacciones de TF, target y efecto.
 
-print(f"Archivo generado: {ruta_salida}")
+    Returns:
+        regulon (dict): Diccionario con TFs como claves y listas de targets como valores.
+    ==============================================================================================
+    """
+    regulon = {}
+
+    for tf, target, efecto in sorted(interacciones):
+        if tf not in regulon:
+            regulon[tf] = []
+        if target not in regulon[tf]:
+            regulon[tf].append(target)
+
+    return(regulon)
+
+# ===================================================================================================
+# Responsabilidad: Obtener la clasificación del efecto de cada TF sobre sus targets
+# Entrada: Una tupla que contenga las interacciones de los TF en el regulon
+# Salida: Un diccionario que clasifique TFs según su efecto sobre los targets
+# ====================================================================================================
+def obtener_efecto_TF(interacciones, regulon):
+    """
+    =============================================================================================
+    Obtiene el efecto esperado del regulador (Activador(+), Represor (-) o Dual (+-)) por cada TF
+    en una lista de reguladores
+
+    Args:
+        interacciones (tpl(str, str, str)): Tupla con las interacciones de TF, target y efecto.
+        regulon (dict): Diccionario con TFs como claves.
+    
+    Returns:
+        clas (dict): Diccionario con los TFs clasificados según la actividad que tienen sobre el target
+    =============================================================================================
+    """
+    clas = {}
+
+    for tf, target, efecto in sorted(interacciones):
+        if tf not in clas:
+            clas[tf] = "Activador" if efecto == "+" else "Represor" if efecto == "-" else "Dual"
+        else:
+            if clas[tf] != "Dual" and clas[tf] != efecto:
+                clas[tf] = "Dual"
+
+    return(clas)
+
+# ===================================================================================================
+# Responsabilidad: Clasificar los TFs del regulon
+# Entrada: Una tupla que contenga las interacciones de los TF en el regulon
+# Salida: Dos diccionarios que organicen targets según su TF y TF´s según el efecto sobre los targets
+# ====================================================================================================
+def clasificacion_TF(interacciones):
+    """
+    ==============================================================================================
+    De una lista de interacciones, clasifico targets por TF, además, clasifico los TFs segun el efecto
+    regulatorio que tiene sobre los targets.
+
+    Args:
+        interacciones (tpl(str, str, str)) = Una clasificacion de targets según su TF, y una construccion de los efectos que
+        tiene sobre el target.
+
+    Returns:
+        regulon, clas (dict) = Regresa diccionarios de TFs con targets asociados, así como diccionarios con el efecto asociado.
+    ==============================================================================================
+    """
+    regulon = construir_regulon(interacciones)
+    clas = obtener_efecto_TF(interacciones, regulon)
+    return(regulon, clas)
+
+# ==================================================================================================
+# Responsabilidad = Imprimir las interacciones en un archivo de salida
+# Entrada = Dos diccionarios que clasifiquen los TFs según targets y efecto, además, una ruta de salida
+# relativa donde se ubique la carpeta donde debería guardar el archivo
+# ==================================================================================================
+def generar_salida(regulon, clas, ruta_salida):
+    """
+    ===================================================================================================
+    Imprime la salida de los diccionarios de interacciones entre TFs, así como los efectos relacionados 
+    con los TFs
+
+    Args:
+        regulon (dict): Diccionario con los TFs y targets asociados
+        clas (dict): Diccionario con los TFs y sus efectos 
+        ruta_salida (str): Ruta relativa del archivo donde se desea imprimir el archivo
+    ===================================================================================================
+    """
+    with open(ruta_salida, "w") as outfile:
+        outfile.write("Gen\tNo. de genes que regula\tGenes regulados\tEfecto\n")
+        for tf in regulon:
+            numero = len(regulon[tf])
+            genes  = ", ".join(regulon[tf])
+            efecto = clas.get(tf, "Desconocido")
+            outfile.write(f"{tf}\t{numero}\t{genes}\t{efecto}\n")
+
+    print(f"Archivo generado: {ruta_salida}")
+
+def main():
+    interacciones = lecture_validation(ruta_entrada)
+    regulon, clas = clasificacion_TF(interacciones)
+    generar_salida(regulon, clas, ruta_salida)
+
+main()
