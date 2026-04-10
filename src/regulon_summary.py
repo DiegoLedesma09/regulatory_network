@@ -188,6 +188,15 @@ def generar_salida(regulon, clas, ruta_salida):
     print(f"Archivo generado: {ruta_salida}")
 
 def parse_arguments():
+    """
+    Define y parsea los argumentos de línea de comandos.
+
+    Esta función crea el parser de argparse, configura los argumentos posicionales
+    `input_file` y `output_file`, y devuelve el objeto con los valores parseados.
+
+    Returns:
+        argparse.Namespace: Contiene `input_file` y `output_file`.
+    """
     parser = argparse.ArgumentParser(description="Resumen de regulones")
     parser.add_argument("input_file", help="Archivo de entrada")
     parser.add_argument("output_file", help="Archivo de salida")
