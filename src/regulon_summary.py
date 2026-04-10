@@ -1,5 +1,5 @@
 import os
-import sys
+import argparse
 # ===================================================================================================
 # Responsabilidad: Leer un archivo, obtener sus interacciones y generar una tupla con las interacciones
 # Entrada: Una ruta relativa para poder manejar el archivo desde la posición del programa
@@ -187,12 +187,20 @@ def generar_salida(regulon, clas, ruta_salida):
 
     print(f"Archivo generado: {ruta_salida}")
 
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Resumen de regulones")
+    parser.add_argument("input_file", help="Archivo de entrada")
+    parser.add_argument("output_file", help="Archivo de salida")
+    return parser.parse_args()
+
+
 def main():
+    args = parse_arguments()
+
+    ruta_entrada = args.input_file
+    ruta_salida = args.output_file
     
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    ruta_entrada = os.path.join(BASE_DIR, "..", "data", "raw", "NetworkRegulatorGene.tsv")
-    ruta_salida = os.path.join(BASE_DIR, "..", "results", "regulon_summary.tsv")
-    os.makedirs(os.path.join(BASE_DIR, "..", "results"), exist_ok=True)
+    os.makedirs(os.path.dirname(ruta_salida), exist_ok=True)
 
     if not os.path.exists(ruta_entrada):
         print("Error: archivo no encontrado")
