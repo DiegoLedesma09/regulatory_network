@@ -68,7 +68,7 @@ def lecture_validation(ruta_entrada):
             if efecto not in {"+", "-", "+-"}:
                 lineas_descartadas += 1
                 continue
-
+            
             interacciones.append((tf, target, efecto))
 
     if lineas_descartadas:
@@ -99,7 +99,7 @@ def construir_regulon(interacciones):
     """
     regulon = {}
 
-    for tf, target, efecto in sorted(interacciones):
+    for tf, target in sorted(interacciones):
         if tf not in regulon:
             regulon[tf] = []
         if target not in regulon[tf]:
@@ -162,25 +162,27 @@ def clasificacion_TF(interacciones):
 
 # ==================================================================================================
 # Responsabilidad = Imprimir las interacciones en un archivo de salida
-# Entrada = Dos diccionarios que clasifiquen los TFs según targets y efecto, además, una ruta de salida
-# relativa donde se ubique la carpeta donde debería guardar el archivo
+# Entrada = Dos diccionarios que clasifiquen los TFs según targets y efecto, una ruta de salida
+# relativa, y un filtro opcional de número mínimo de genes regulados
 # ==================================================================================================
-def generar_salida(regulon, clas, ruta_salida):
+def generar_salida(regulon, clas, ruta_salida, minimal_genes=0):
     """
     ===================================================================================================
-    Imprime la salida de los diccionarios de interacciones entre TFs, así como los efectos relacionados 
-    con los TFs
+    Imprime la salida de los diccionarios de interacciones entre TFs, filtrando TFs con pocos genes.
 
     Args:
         regulon (dict): Diccionario con los TFs y targets asociados
-        clas (dict): Diccionario con los TFs y sus efectos 
+        clas (dict): Diccionario con los TFs y sus efectos
         ruta_salida (str): Ruta relativa del archivo donde se desea imprimir el archivo
+        minimal_genes (int): Filtra TFs con menos de este número de genes regulados
     ===================================================================================================
     """
     with open(ruta_salida, "w") as outfile:
         outfile.write("Gen\tNo. de genes que regula\tGenes regulados\tEfecto\n")
         for tf in regulon:
             numero = len(regulon[tf])
+            if numero < minimal_genes:
+                continue
             genes  = ", ".join(regulon[tf])
             efecto = clas.get(tf, "Desconocido")
             outfile.write(f"{tf}\t{numero}\t{genes}\t{efecto}\n")
@@ -192,14 +194,15 @@ def parse_arguments():
     Define y parsea los argumentos de línea de comandos.
 
     Esta función crea el parser de argparse, configura los argumentos posicionales
-    `input_file` y `output_file`, y devuelve el objeto con los valores parseados.
+    `input_file` y `output_file`, y el argumento opcional `--min_genes`.
 
     Returns:
-        argparse.Namespace: Contiene `input_file` y `output_file`.
+        argparse.Namespace: Contiene `input_file`, `output_file` y `min_genes`.
     """
     parser = argparse.ArgumentParser(description="Resumen de regulones")
     parser.add_argument("input_file", help="Archivo de entrada")
     parser.add_argument("output_file", help="Archivo de salida")
+    parser.add_argument("--min_genes", type=int, default=0, help="Filtrar TFs con menos de este número de genes regulados")
     return parser.parse_args()
 
 
@@ -208,6 +211,7 @@ def main():
 
     ruta_entrada = args.input_file
     ruta_salida = args.output_file
+    minimal_genes = args.min_genes 
     
     os.makedirs(os.path.dirname(ruta_salida), exist_ok=True)
 
@@ -217,6 +221,6 @@ def main():
 
     interacciones = lecture_validation(ruta_entrada)
     regulon, clas = clasificacion_TF(interacciones)
-    generar_salida(regulon, clas, ruta_salida)
+    generar_salida(regulon, clas, ruta_salida, minimal_genes)
 
 main()

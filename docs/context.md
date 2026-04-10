@@ -37,3 +37,11 @@ El programa depende de rutas fijas (hardcoded).
 
 Nuevo requisito:
 El programa debe recibir dos argumentos. El archivo de entrada y salida.
+
+## Actualización v1.3
+
+Problema:
+El usuario necesita filtrar TFs con pocos genes regulados.
+
+Nuevo requisito:
+Agregar el parámetro opcional `--min_genes` para excluir TFs que regulan menos de ese número de genes.

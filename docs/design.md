@@ -21,3 +21,13 @@ El programa recibirá dos argumentos desde la línea de comandos.
 Flujo:
 
 usuario -->  CLI --> main() --> funciones
+
+## Actualización v1.3
+
+Agregar el argumento opcional `--min_genes`.
+
+Flujo:
+
+usuario --> CLI --> main() --> parse_arguments() --> funciones
+
+El filtro `min_genes` se aplica al momento de generar la salida: solo se imprimen TFs que regulan al menos ese número de genes.
