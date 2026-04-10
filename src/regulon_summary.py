@@ -1,16 +1,5 @@
 import os
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ruta_entrada = os.path.join(BASE_DIR, "..", "data", "raw", "NetworkRegulatorGene.tsv")
-ruta_salida = os.path.join(BASE_DIR, "..", "results", "regulon_summary.tsv")
-os.makedirs(os.path.join(BASE_DIR, "..", "results"), exist_ok=True)
-
-if not os.path.exists(ruta_entrada):
-    print("Error: archivo no encontrado")
-    exit(1)
-    
-    
-
+import sys
 # ===================================================================================================
 # Responsabilidad: Leer un archivo, obtener sus interacciones y generar una tupla con las interacciones
 # Entrada: Una ruta relativa para poder manejar el archivo desde la posición del programa
@@ -199,6 +188,16 @@ def generar_salida(regulon, clas, ruta_salida):
     print(f"Archivo generado: {ruta_salida}")
 
 def main():
+    
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    ruta_entrada = os.path.join(BASE_DIR, "..", "data", "raw", "NetworkRegulatorGene.tsv")
+    ruta_salida = os.path.join(BASE_DIR, "..", "results", "regulon_summary.tsv")
+    os.makedirs(os.path.join(BASE_DIR, "..", "results"), exist_ok=True)
+
+    if not os.path.exists(ruta_entrada):
+        print("Error: archivo no encontrado")
+        exit(1)
+
     interacciones = lecture_validation(ruta_entrada)
     regulon, clas = clasificacion_TF(interacciones)
     generar_salida(regulon, clas, ruta_salida)

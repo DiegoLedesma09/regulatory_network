@@ -331,3 +331,15 @@ Advertencia: 9 línea(s) descartadas por datos inválidos.
 Gen	No. de genes que regula	Genes regulados	Efecto
 AraC	1	araA	Activador
 ```
+
+##  Comand Line Interface (CLI)
+
+**Descripción:** Correr el programa con paso de argumentos.
+
+**Entrada:** 
+
+``` bash
+uv run python script.py input.txt output.txt
+```
+
+**Comportamiento esperado:** El programa lea el archivo de entrada y genere el resultado de salida correctamente con el nombre que se le pasó como argumento.

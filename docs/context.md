@@ -29,3 +29,11 @@ Efecto regulador del gen
 1. Leer los datos desde un archivo
     1.1 El archivo trae 7 columnas y las que vamos a usar son: 2, 5 y 6
 2. Los resultados deberán mandarse a un archivo de salida 
+
+## Actualización v1.2
+
+Problema:
+El programa depende de rutas fijas (hardcoded).
+
+Nuevo requisito:
+El programa debe recibir dos argumentos. El archivo de entrada y salida.

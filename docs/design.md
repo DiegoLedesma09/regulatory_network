@@ -13,3 +13,11 @@
 - Recorrer toda la lista de los reguladores
     - Contar los genes de la lista de genes regulados por el TF
     - Imprime regulador, conteo y lista de genes.
+
+## Actualización v1.2
+
+El programa recibirá dos argumentos desde la línea de comandos.
+
+Flujo:
+
+usuario -->  CLI --> main() --> funciones
