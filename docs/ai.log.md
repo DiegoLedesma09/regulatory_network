@@ -1,7 +1,7 @@
 # Reporte de Sesión – regulatory_network
 
 **Fecha:** 25 de marzo de 2026
-**Total de prompts:** 12
+**Total de prompts:** 13
 
 ---
 
@@ -30,3 +30,6 @@ Se pidió agregar la actualización v1.4 a la documentación en `design.md`, `co
 
 **Prompt 12 — Agregar casos de prueba**
 Se pidió añadir casos de prueba adicionales al archivo `casos_prueba.md`, enfocándose en escenarios de error y validaciones de v1.4.
+
+**Prompt 13 — Completar README con todas las actualizaciones**
+Se pidió completar el README.md con todas las actualizaciones basadas en los archivos design.md y context.md, incluyendo descripción completa, requisitos, instalación, uso, estructura, changelog y referencias.
