@@ -343,7 +343,7 @@ uv run python script.py input.txt output.txt
 ```
 
 **Comportamiento esperado:** El programa lea el archivo de entrada y genere el resultado de salida correctamente con el nombre que se le pasó como argumento.
-
+|
 ---
 
 ## Caso 26: Argumento --min_genes negativo (v1.4)
