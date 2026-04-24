@@ -31,3 +31,14 @@ Flujo:
 usuario --> CLI --> main() --> parse_arguments() --> funciones
 
 El filtro `min_genes` se aplica al momento de generar la salida: solo se imprimen TFs que regulan al menos ese número de genes.
+
+## Actualización v1.4
+
+Se agregó manejo robusto de errores y validaciones adicionales para mejorar la robustez del programa:
+
+- **Manejo de errores de I/O**: Captura y maneja errores como archivo no encontrado, permisos denegados, problemas de encoding y errores de sistema de archivos, mostrando mensajes claros al usuario.
+- **Validaciones de datos**: Verifica archivos vacíos, encabezados inválidos, argumentos inválidos (ej. min_genes negativo) y datos mal formados (líneas con columnas insuficientes, campos vacíos, efectos inválidos).
+
+Flujo actualizado:
+
+usuario --> CLI --> main() --> validaciones --> lecture_validation() --> clasificacion_TF() --> generar_salida() --> salida

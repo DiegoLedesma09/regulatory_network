@@ -45,3 +45,17 @@ El usuario necesita filtrar TFs con pocos genes regulados.
 
 Nuevo requisito:
 Agregar el parámetro opcional `--min_genes` para excluir TFs que regulan menos de ese número de genes.
+
+## Actualización v1.4
+
+Problema:
+El programa podía fallar silenciosamente o con errores poco informativos ante archivos corruptos, permisos insuficientes o datos inválidos.
+
+Nuevo requisito:
+Implementar manejo de errores robusto y validaciones para casos edge:
+
+- Manejo de errores de archivo (no encontrado, permisos, encoding).
+- Validación de archivos vacíos o sin encabezado válido.
+- Verificación de argumentos inválidos (ej. min_genes negativo).
+- Detección de datos mal formados (columnas faltantes, campos vacíos, efectos inválidos).
+- Mensajes de error claros y específicos para facilitar la resolución de problemas.

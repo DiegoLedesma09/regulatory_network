@@ -343,3 +343,96 @@ uv run python script.py input.txt output.txt
 ```
 
 **Comportamiento esperado:** El programa lea el archivo de entrada y genere el resultado de salida correctamente con el nombre que se le pasó como argumento.
+
+---
+
+## Caso 26: Argumento --min_genes negativo (v1.4)
+
+**Descripción:** El usuario pasa un valor negativo para --min_genes.
+
+**Entrada:** 
+```bash
+python src/regulon_summary.py data/raw/NetworkRegulatorGene.tsv results/output.tsv --min_genes -1
+```
+
+**Comportamiento esperado:** El programa valida el argumento y termina con un mensaje de error claro antes de procesar archivos.
+
+**Salida esperada:**
+```
+Error: El valor de --min_genes no puede ser negativo.
+```
+
+---
+
+## Caso 27: Archivo con encoding incorrecto (v1.4)
+
+**Descripción:** El archivo de entrada tiene encoding no UTF-8 (ej. Latin-1).
+
+**Entrada:** Archivo TSV válido pero guardado en encoding Latin-1.
+
+**Comportamiento esperado:** El programa detecta el error de decoding y termina con un mensaje específico.
+
+**Salida esperada:**
+```
+Error: El archivo 'data/raw/NetworkRegulatorGene.tsv' contiene caracteres no válidos o no es un archivo de texto UTF-8.
+```
+
+---
+
+## Caso 28: Permisos denegados para escritura (v1.4)
+
+**Descripción:** El directorio de salida existe pero no hay permisos para escribir archivos.
+
+**Entrada:** Directorio `results/` con permisos de solo lectura.
+
+**Comportamiento esperado:** El programa intenta escribir el archivo, falla y muestra un mensaje de error claro.
+
+**Salida esperada:**
+```
+Error: Permiso denegado al intentar escribir en el archivo 'results/regulon_summary.tsv'. Verifique los permisos de acceso.
+```
+
+---
+
+## Caso 29: Archivo sin encabezado válido (v1.4)
+
+**Descripción:** El archivo tiene líneas de datos pero no un encabezado con las columnas requeridas.
+
+**Entrada:** Archivo sin línea de encabezado, solo datos.
+
+**Comportamiento esperado:** El programa detecta la falta de encabezado y termina con un mensaje de error.
+
+**Salida esperada:**
+```
+Error: El archivo 'data/raw/NetworkRegulatorGene.tsv' parece estar vacío o no contiene un encabezado válido.
+```
+
+---
+
+## Caso 30: Líneas con menos columnas que el índice máximo (v1.4)
+
+**Descripción:** Una línea de datos tiene menos columnas que las requeridas para acceder al índice de la columna 6.
+
+**Entrada:** Línea con solo 5 columnas en un archivo con encabezado de 7 columnas.
+
+**Comportamiento esperado:** La línea se descarta y se cuenta en las advertencias.
+
+**Salida esperada:**
+```
+Advertencia: 1 línea(s) descartadas por datos inválidos.
+```
+
+---
+
+## Caso 31: Error al crear directorio de salida (v1.4)
+
+**Descripción:** No se puede crear el directorio padre del archivo de salida (ej. disco lleno, permisos).
+
+**Entrada:** Ruta de salida en un directorio sin permisos para crear subdirectorios.
+
+**Comportamiento esperado:** El programa falla al crear el directorio y muestra un mensaje de error.
+
+**Salida esperada:**
+```
+Error: No se pudo crear el directorio para el archivo de salida 'results/regulon_summary.tsv': [descripción del error].
+```
